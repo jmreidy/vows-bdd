@@ -115,7 +115,7 @@ for you:
 Creates and returns a Vows suite
 
 Calling `scenario(batchName)` on the returned Vows suite provides access
-to a Scenario object, which wraps a Vows batch.
+to a `Scenario` object, which wraps a Vows batch with the following:
 
     given(string,callback) 
 Creates a topic object
