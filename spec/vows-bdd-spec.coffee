@@ -1,4 +1,4 @@
-{Feature} = require "#{__dirname}/../src"
+{Feature} = require "#{__dirname}/../lib"
 assert = require "assert"
 Sinon = require "sinon"
 vows = require "vows"
