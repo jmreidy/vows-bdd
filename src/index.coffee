@@ -35,14 +35,18 @@ class Scenario
         return
     @_addToVows description, @currentVow
 
+  _needsAnd: () ->
+    @vows and (_.first(_.keys @vows).match(/,/) != null)
+
   constructor: (description, suite) ->
-    @description = description
+    @description = "#{description}:"
     @suite = suite
     @currentVow = {}
     @batch = {}
 
   given: (description, callback) ->
-    @_createContext "Given #{description}, ",callback
+    if description.length > 0 then description = "#{description}, "
+    @_createContext "Given #{description}",callback
     return this 
 
   when: (description, callback) ->
@@ -57,7 +61,8 @@ class Scenario
     if @_hasTests @currentVow
       @then "#{description}", callback
     else
-      @_createContext "and #{description}", callback
+      if @_needsAnd() then description = "and #{description}"
+      @_createContext "#{description}, ", callback
     return this
 
   complete: (teardown) ->

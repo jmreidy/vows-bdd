@@ -29,4 +29,20 @@ Feature("Vows BDD",module)
   .and "the 'given' function passes its results to tests", (err,result) ->
     assert.equal result, "foo"
   .complete()
+
+  .scenario("Vows tdd annotations")
+  .given "", ->
+    createSpy.call this, "givenA"
+  .and "a secondary given exists", ->
+    createSpy.call this, "givenB"
+  .then "the first Given description should be ignored", (err) ->
+    assert.match this.context.title, /Given a secondary given exists/
+  .complete()
+
+  .scenario("Scenario title formatting")
+  .given "an initial given", ->
+    createSpy.call this, "givenA"
+  .then "the scenario title should have a colon after it", (err) ->
+    assert.match this.context.title, /Scenario title formatting\:/
+  .complete()
   .finish(module)
