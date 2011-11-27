@@ -2,7 +2,10 @@
   "author": "Justin Reidy <jmreidy@rzrsharp.net> (http://rzrsharp.net)",
   "name": "vows-bdd",
   "description": "A BDD wrapper for Vows, allowing for easy writing of tests in a given-when-then format",
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "scripts": {
+    "test": "vows --spec"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/jmreidy/vows-bdd.git"
@@ -12,8 +15,8 @@
   },
   "main": "./lib/index.js",
   "dependencies": {
-    "vows": "0.5.x",
-    "underscore": "1.1.x"
+    "vows": ">=0.6.0",
+    "underscore": ">=1.1.0"
   },
   "devDependencies": {
     "coffee-script": "1.1.x",
