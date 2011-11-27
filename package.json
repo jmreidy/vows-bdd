@@ -2,7 +2,7 @@
   "author": "Justin Reidy <jmreidy@rzrsharp.net> (http://rzrsharp.net)",
   "name": "vows-bdd",
   "description": "A BDD wrapper for Vows, allowing for easy writing of tests in a given-when-then format",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "scripts": {
     "test": "vows --spec",
     "docco": "docco src/*.coffee"
