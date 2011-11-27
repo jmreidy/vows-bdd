@@ -1,0 +1,117 @@
+<!DOCTYPE html>  <html> <head>   <title>index.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               index.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p><strong>vows-bdd</strong> presents a set of wrappers for the core functionality of 
+<a href="http://www.vowsjs.org">vows</a>, allowing for a traditional <code>given/when/then</code> 
+style of writing integration tests for node.js.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">vows = </span><span class="nx">require</span> <span class="s2">&quot;vows&quot;</span>
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s2">&quot;underscore&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h3>Feature</h3>
+
+<p>The interface through which one creates vows-bdd tests is the <code>Feature</code>. 
+Features are written fluently, chaining together <code>given/when/then</code> calls. 
+When the entire Feature test is complete (ie all batches have been added), 
+<code>finish</code> should be called on the feature. The result looks like the
+following:</p>
+
+<pre><code>Feature("A vows-bdd test")
+.scenario("a test batch")
+.given("a given condition", givenFunction)
+.when("a when condition", whenFunction)
+.and("a joined when condition", when2Function)
+.then("a test assertion")
+.complete()
+.finish(module)
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">Feature = </span><span class="nf">(description) -&gt;</span>
+  <span class="nv">suite = </span><span class="nx">vows</span><span class="p">.</span><span class="nx">describe</span><span class="p">(</span><span class="nx">description</span><span class="p">)</span>
+  <span class="nv">suite.scenario = </span><span class="nf">(description) -&gt;</span>
+    <span class="k">new</span> <span class="nx">Scenario</span><span class="p">(</span><span class="nx">description</span><span class="p">,</span> <span class="nx">suite</span><span class="p">)</span>
+  <span class="nv">suite.finish = </span><span class="nf">(module) -&gt;</span> 
+    <span class="nx">suite</span><span class="p">.</span><span class="nx">export</span> <span class="nx">module</span>
+  <span class="k">return</span> <span class="nx">suite</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h3>Scenario</h3>
+
+<p>Each <code>batch</code> of vows tests are encapsulated in a <code>Scenario</code>. Test topics
+are created with <code>given</code> and <code>when</code> function calls; <code>then</code> calls create test
+assertions. The meaning of <code>and</code> depends upon its placement within the
+vows-bdd scenario; <code>and</code> after <code>given</code> or <code>when</code> creates a topic, while <code>and</code>
+after <code>then</code> creates a test assertion. </p>
+
+<p><code>given</code>,<code>when</code>,<code>then</code>, and <code>and</code> have the same method signatures. The
+funcition can be called by providing a text description and the test
+function, or it can be called by provided a two-element array, with the first
+element being a text description and the second being the test function. This
+secondary method signature is useful for DRY-ing repetitive test code. For
+example, a method could be used to simplify repetitive integration steps:</p>
+
+<pre><code>I_login_as = (user_type) -&gt;
+...logic
+return ["I login as a #{user_type}", login_function]
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Scenario</span> 
+
+  <span class="nv">_reduceArray: </span><span class="nf">(args) -&gt;</span>
+    <span class="k">if</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">and</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span>
+      <span class="nv">description = </span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+      <span class="nv">callback = </span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+      <span class="nv">args = </span><span class="p">[</span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="nx">args</span>
+
+  <span class="nv">_lastChild: </span><span class="nf">(parent) -&gt;</span>
+    <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span> <span class="nx">parent</span>
+      <span class="k">if</span> <span class="k">typeof</span> <span class="nx">child</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span>
+        <span class="k">return</span> <span class="nx">@_lastChild</span> <span class="nx">child</span> 
+    <span class="k">return</span> <span class="nx">parent</span>
+
+  <span class="nv">_hasTests: </span><span class="nf">(vow) -&gt;</span>
+    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">vow</span><span class="p">),</span> <span class="nf">(key) -&gt;</span>
+      <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">include</span> <span class="p">[</span><span class="s2">&quot;topic&quot;</span><span class="p">,</span><span class="s2">&quot;teardown&quot;</span><span class="p">],</span><span class="nx">key</span><span class="p">)</span> <span class="o">==</span> <span class="kc">false</span>
+
+  <span class="nv">_addToVows: </span><span class="nf">(description, newVow) -&gt;</span>
+    <span class="k">if</span> <span class="nx">@vows</span>
+      <span class="nv">vow = </span><span class="nx">@_lastChild</span> <span class="nx">@vows</span> 
+    <span class="k">else</span>
+      <span class="nv">vow = </span><span class="vi">@vows = </span><span class="p">{}</span>
+    <span class="nx">vow</span><span class="p">[</span><span class="nx">description</span><span class="p">]</span> <span class="o">=</span> <span class="nx">newVow</span>
+
+  <span class="nv">_createContext: </span><span class="nf">(description,callback) -&gt;</span>
+    <span class="vi">@currentVow = </span> 
+      <span class="nv">topic: </span><span class="o">-&gt;</span>
+        <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
+        <span class="k">return</span>
+    <span class="nx">@_addToVows</span> <span class="nx">description</span><span class="p">,</span> <span class="nx">@currentVow</span>
+
+  <span class="nv">_needsAnd: </span><span class="nf">() -&gt;</span>
+    <span class="nx">@vows</span> <span class="o">and</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">@vows</span><span class="p">).</span><span class="nx">match</span><span class="p">(</span><span class="sr">/,/</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Main constructor for <code>Scenarios</code> </p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">constructor: </span><span class="nf">(description, suite) -&gt;</span>
+    <span class="vi">@description = </span><span class="s2">&quot;#{description}:&quot;</span>
+    <span class="vi">@suite = </span><span class="nx">suite</span>
+    <span class="vi">@currentVow = </span><span class="p">{}</span>
+    <span class="vi">@batch = </span><span class="p">{}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Create a topic. Called with either a description and topic function, or an
+array with the description as the first element and the topic function as
+the second element. The description is prefaced by "Given ".</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">given: </span><span class="nf">(args...) -&gt;</span>
+    <span class="p">[</span><span class="nx">description</span><span class="p">,</span> <span class="nx">callback</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_reduceArray</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">description</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="nv">description = </span><span class="s2">&quot;#{description}, &quot;</span>
+    <span class="nx">@_createContext</span> <span class="s2">&quot;Given #{description}&quot;</span><span class="p">,</span><span class="nx">callback</span>
+    <span class="k">return</span> <span class="k">this</span> </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Create a topic (or subtopic). Called with either a description and topic function, or an
+array with the description as the first element and the topic function as
+the second element. The description is prefaced by "When ".</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">when</span><span class="o">:</span> <span class="nf">(args...) -&gt;</span>
+    <span class="p">[</span><span class="nx">description</span><span class="p">,</span> <span class="nx">callback</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_reduceArray</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span>
+    <span class="nx">@_createContext</span> <span class="s2">&quot;When #{description}, &quot;</span><span class="p">,</span><span class="nx">callback</span>
+    <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Create a test function. Called with either a description and topic
+function, or an array with the description as the first element and the
+topic function as the second. The description is prefaced by "Then ".</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">then</span><span class="o">:</span> <span class="nf">(args...) -&gt;</span>
+    <span class="p">[</span><span class="nx">description</span><span class="p">,</span> <span class="nx">callback</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_reduceArray</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span>
+    <span class="nx">@currentVow</span><span class="p">[</span><span class="s2">&quot;Then #{description}&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">callback</span>
+    <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Depending on context, either creates a new topic or new test. Called with
+either a description and topic function, or an array with the description
+as the first element and the function as the second element. <code>Ands</code> that
+create topic functions with preface the function with "and ".</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="o">and:</span> <span class="nf">(args...) -&gt;</span>
+    <span class="p">[</span><span class="nx">description</span><span class="p">,</span> <span class="nx">callback</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_reduceArray</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">@_hasTests</span> <span class="nx">@currentVow</span>
+      <span class="nx">@then</span> <span class="s2">&quot;#{description}&quot;</span><span class="p">,</span> <span class="nx">callback</span>
+    <span class="k">else</span>
+      <span class="k">if</span> <span class="nx">@_needsAnd</span><span class="p">()</span> <span class="k">then</span> <span class="nv">description = </span><span class="s2">&quot;and #{description}&quot;</span>
+      <span class="nx">@_createContext</span> <span class="s2">&quot;#{description}, &quot;</span><span class="p">,</span> <span class="nx">callback</span>
+    <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Close out the current <code>Scenario</code> / test batch. Takes an optional teardown
+function.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">complete: </span><span class="nf">(teardown) -&gt;</span>
+    <span class="k">if</span> <span class="nx">teardown</span> <span class="k">then</span> <span class="nx">@currentVow</span><span class="p">[</span><span class="s2">&quot;teardown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">teardown</span>
+    <span class="nx">@batch</span><span class="p">[</span><span class="nx">@description</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@vows</span>
+    <span class="nx">@suite</span><span class="p">.</span><span class="nx">addBatch</span> <span class="nx">@batch</span>
+    <span class="k">return</span> <span class="nx">@suite</span>
+
+<span class="nv">exports.Feature = </span><span class="nx">Feature</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
