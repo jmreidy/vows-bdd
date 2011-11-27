@@ -45,4 +45,23 @@ Feature("Vows BDD",module)
   .then "the scenario title should have a colon after it", (err) ->
     assert.match this.context.title, /Scenario title formatting\:/
   .complete()
+
+  .scenario("Given/when/then/and support arguments array")
+  .given(["a given args array", -> createSpy.call this, "givenA"])
+  .and(["an 'and' args array", -> createSpy.call this, "givenAnd"])
+  .when(["a 'when' args array", -> createSpy.call this, "whenA"])
+  .then(["a 'then' args array is test", ->
+    assert.isTrue true])
+  .and "given functions are called in order", (err) ->
+    assert.isTrue @givenA.calledBefore @givenAnd
+  .and "when functions are called", (err) ->
+    assert.isTrue @whenA.calledOnce
+  .and "the given title is added properly", (err) ->
+    assert.match @context.title, /a given args array/
+  .and "the 'and' title is added properly", (err) ->
+    assert.match @context.title, /an 'and' args array/
+  .and "the 'when' title is added properly", (err) ->
+    assert.match @context.title, /a 'when' args array/
+  .complete()
   .finish(module)
+
