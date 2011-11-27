@@ -4,7 +4,8 @@
   "description": "A BDD wrapper for Vows, allowing for easy writing of tests in a given-when-then format",
   "version": "0.1.2",
   "scripts": {
-    "test": "vows --spec"
+    "test": "vows --spec",
+    "docco": "docco src/*.coffee"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "coffee-script": "1.1.x",
-    "sinon": "1.1.x"
+    "sinon": ">=1.1.0",
+    "docco": ">=0.3.0"
   }
 }
