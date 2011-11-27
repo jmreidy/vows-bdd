@@ -108,35 +108,7 @@ Here's the same integration test, with vows-bdd:
 API
 -------
 
-vows-bdd works by simply constructing the vows' nested object structure
-for you:
-
-    Feature(name)
-Creates and returns a Vows suite
-
-Calling `scenario(batchName)` on the returned Vows suite provides access
-to a `Scenario` object, which wraps a Vows batch with the following:
-
-    given(string,callback) 
-Creates a topic object
-
-    when(string,callback)
-Also creates a topic object. It's expected that the values returned from
-this callback function will be the ones used for tests, although it's not 
-necessary.
-
-    then(string,callback)
-Adds Vows tests to the current topic object
-
-    and(string,callback)
-Adds either a new topic object (after `given` or `when` calls) or a new test
-(after a `then` call).
-
-    complete(teardown)
-Closes the current batch and supplies an optional teardown function
-
-    finish(module)
-Exports the test suite
+Check out the [docco docs](http://rzrsharp.net/vows-bdd/).
 
 AUTHORS
 -------
