@@ -11,6 +11,14 @@ Feature = (description) ->
 
 class Scenario 
 
+
+  _reduceArray: (args) ->
+    if args.length == 1 and Array.isArray(args)
+      description = args[0][0]
+      callback = args[0][1]
+      args = [args[0][0], args[0][1]]
+    return args
+
   _lastChild: (parent) ->
     for child in _.values parent
       if typeof child == "object"
@@ -44,20 +52,24 @@ class Scenario
     @currentVow = {}
     @batch = {}
 
-  given: (description, callback) ->
+  given: (args...) ->
+    [description, callback] = @_reduceArray(args)
     if description.length > 0 then description = "#{description}, "
     @_createContext "Given #{description}",callback
     return this 
 
-  when: (description, callback) ->
+  when: (args...) ->
+    [description, callback] = @_reduceArray(args)
     @_createContext "When #{description}, ",callback
     return this
 
-  then: (description, test) ->
-    @currentVow["Then #{description}"] = test
+  then: (args...) ->
+    [description, callback] = @_reduceArray(args)
+    @currentVow["Then #{description}"] = callback
     return this
 
-  and: (description, callback) ->
+  and: (args...) ->
+    [description, callback] = @_reduceArray(args)
     if @_hasTests @currentVow
       @then "#{description}", callback
     else
